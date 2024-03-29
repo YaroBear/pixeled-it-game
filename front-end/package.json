@@ -1,0 +1,11 @@
+{
+  "name": "pixeled-it",
+  "version": "1.0.0",
+  "description": "Fun game where the goal is to replicate an image by drawing in a low resolution grid",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "YaroBear",
+  "license": "ISC"
+}
