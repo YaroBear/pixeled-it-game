@@ -4,8 +4,7 @@
   <div class="flex flex-col gap-4 mb-10 w-1/2" [formGroup]="sessionFormGroup">
     <label class="font-bold mb-1">Session ID</label>
     <input
-      class="border-gray-300 p-2 rounded"
-      [class.cursor-not-allowed]="sessionFormGroup.get('sessionId')?.disabled"
+      class="border-gray-300 p-2 rounded disabled:cursor-not-allowed"
       type="text"
       formControlName="sessionId"
     />

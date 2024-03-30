@@ -7,6 +7,7 @@ import { NewSessionComponent } from './new-session/new-session.component';
 import { LandingComponent } from './landing/landing.component';
 import { JoinSessionComponent } from './join-session/join-session.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,24 +1,37 @@
 <div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
   <h1 class="text-4xl font-bold mb-10">Start New Session</h1>
 
-  <div class="flex flex-col gap-4 mb-10 w-1/2">
+  <form
+    [formGroup]="newSessionFormGroup"
+    class="flex flex-col gap-4 mb-10 w-1/2"
+  >
     <label class="font-bold mb-1">Upload Pictures</label>
-    <input type="file" class="border-gray-300 p-2 rounded" multiple />
-
+    <input
+      type="file"
+      #fileInput
+      class="border-gray-300 p-2 rounded"
+      multiple
+      formControlName="pictures"
+    />
     <label class="font-bold mb-1">Session Password</label>
-    <input type="password" class="border-gray-300 p-2 rounded" />
-
+    <input
+      class="border-gray-300 p-2 rounded"
+      type="password"
+      formControlName="password"
+    />
     <label class="font-bold mb-1">Game Time (minutes)</label>
     <input
       type="number"
       value="15"
       min="1"
       class="border-gray-300 p-2 rounded"
+      formControlName="gameTime"
     />
-  </div>
-
+  </form>
   <button
-    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    [disabled]="newSessionFormGroup.invalid"
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
+    (click)="createSession()"
   >
     Create Session
   </button>
