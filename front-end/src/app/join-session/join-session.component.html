@@ -1,0 +1,27 @@
+<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+  <h1 class="text-4xl font-bold mb-10">Join Session</h1>
+
+  <div class="flex flex-col gap-4 mb-10 w-1/2" [formGroup]="sessionFormGroup">
+    <label class="font-bold mb-1">Session ID</label>
+    <input
+      class="border-gray-300 p-2 rounded"
+      [class.cursor-not-allowed]="sessionFormGroup.get('sessionId')?.disabled"
+      type="text"
+      formControlName="sessionId"
+    />
+
+    <label class="font-bold mb-1">Session Password</label>
+    <input
+      type="password"
+      class="border-gray-300 p-2 rounded"
+      formControlName="password"
+    />
+  </div>
+
+  <button
+    [disabled]="sessionFormGroup.invalid"
+    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
+  >
+    Join Session
+  </button>
+</div>

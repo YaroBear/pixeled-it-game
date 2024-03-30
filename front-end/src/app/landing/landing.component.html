@@ -1,0 +1,37 @@
+<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+  <h1 class="text-4xl font-bold mb-10">Pixeled It</h1>
+
+  <div class="grid grid-cols-2 gap-4 mb-10">
+    <div class="h-full">
+      <img
+        src="assets/obama.jpg"
+        alt="Original"
+        class="rounded-lg shadow-lg h-full"
+      />
+    </div>
+    <div class="h-full">
+      <img
+        src="assets/pixel-obama.png"
+        alt="Drawing"
+        class="rounded-lg shadow-lg h-full"
+      />
+    </div>
+  </div>
+
+  <div class="flex gap-4">
+    <a routerLink="/new-session">
+      <button
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        Start New Session
+      </button>
+    </a>
+    <a routerLink="/join-session">
+      <button
+        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+      >
+        Join Existing Session
+      </button>
+    </a>
+  </div>
+</div>
