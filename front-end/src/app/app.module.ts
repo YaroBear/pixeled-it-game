@@ -8,13 +8,15 @@ import { LandingComponent } from './landing/landing.component';
 import { JoinSessionComponent } from './join-session/join-session.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NewSessionComponent,
     LandingComponent,
-    JoinSessionComponent
+    JoinSessionComponent,
+    WaitingRoomComponent
   ],
   imports: [
     BrowserModule,

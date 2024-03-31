@@ -15,12 +15,24 @@
       class="border-gray-300 p-2 rounded"
       formControlName="password"
     />
+
+    <label class="font-bold mb-1">Name</label>
+    <input
+      type="text"
+      class="border-gray-300 p-2 rounded"
+      formControlName="name"
+    />
   </div>
 
   <button
     [disabled]="sessionFormGroup.invalid"
+    (click)="joinSession()"
     class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
   >
     Join Session
   </button>
+
+  <div *ngIf="error != ''">
+    <p class="text-red-500 mt-4">{{ error }}</p>
+  </div>
 </div>

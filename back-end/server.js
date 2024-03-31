@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
 import upload from "./services/file-storage.js";
+import wss from "./ws-server.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

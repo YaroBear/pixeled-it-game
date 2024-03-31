@@ -3,6 +3,13 @@ CREATE TABLE session (
     password VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE user_session (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    session_id INT NOT NULL,
+    FOREIGN KEY (session_id) REFERENCES session(id)
+);
+
 CREATE TABLE original_picture (
     id SERIAL PRIMARY KEY,
     path VARCHAR(255) NOT NULL,

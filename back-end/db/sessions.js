@@ -17,4 +17,23 @@ async function getSession(id) {
   return session[0];
 }
 
-export { createSession, getSession };
+async function joinSession(name, sessionId) {
+  await sql`
+        insert into user_session (name, session_id)
+        select ${name}, ${sessionId}
+        where not exists (
+            select 1 from user_session
+            where name = ${name} and session_id = ${sessionId}
+        )
+    `;
+}
+
+async function getUsersInSession(sessionId) {
+  const users = await sql`
+        select name from user_session
+        where session_id = ${sessionId}
+    `;
+  return users;
+}
+
+export { createSession, getSession, joinSession, getUsersInSession };
