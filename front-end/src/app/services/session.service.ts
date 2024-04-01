@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, ReplaySubject, Subject, map, switchMap, tap } from 'rxjs';
 import { SessionWsService } from './session-ws.service';
 
-interface SessionStore {
+export interface SessionStore {
   name: string;
   sessionHost: boolean;
   token: string;

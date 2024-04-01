@@ -14,12 +14,14 @@ export class SessionWsService {
 
   private subject$: WebSocketSubject<any> | undefined;
   private readonly usersReplaySubject$ = new ReplaySubject<UpdateUsersResponse>();
+  connected: boolean = false;
 
   constructor() {
   }
 
   connect(sessionId: number, token: string, name: string) {
     this.subject$ = webSocket('ws://localhost:3000/session/' + sessionId + '/join/' + token);
+    this.connected = true;
     this.subject$.next({ type: 'joinSession', sessionId: sessionId });
     this.subject$.subscribe(
       {
