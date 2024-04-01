@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SessionStore } from '../services/session.service';
 import { Subject, takeUntil } from 'rxjs';
 import { SessionWsService, UpdateUsersResponse } from '../services/session-ws.service';
@@ -18,7 +18,7 @@ export class WaitingRoomComponent implements OnInit, OnDestroy {
   sessionId: number = 0;
   isSessionHost: boolean = false;
 
-  constructor(private route: ActivatedRoute, private sessionWsService: SessionWsService) { }
+  constructor(private route: ActivatedRoute, private sessionWsService: SessionWsService, private router: Router) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];
@@ -46,7 +46,7 @@ export class WaitingRoomComponent implements OnInit, OnDestroy {
   }
 
   startGame() {
-
+    this.router.navigate(['game-room', this.sessionId]);
   }
 
 }

@@ -5,6 +5,7 @@ import { LandingComponent } from './landing/landing.component';
 import { JoinSessionComponent } from './join-session/join-session.component';
 import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
 import { authenticatedGuard } from './guards/authenticated.guard';
+import { GameRoomComponent } from './game-room/game-room.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,9 @@ const routes: Routes = [
   },
   {
     component: WaitingRoomComponent, path: 'waiting-room/:id', canActivate: [authenticatedGuard]
+  },
+  {
+    component: GameRoomComponent, path: 'game-room/:id', canActivate: [authenticatedGuard]
   }
 ];
 

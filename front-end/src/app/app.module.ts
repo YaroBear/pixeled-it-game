@@ -9,6 +9,7 @@ import { JoinSessionComponent } from './join-session/join-session.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
+import { GameRoomComponent } from './game-room/game-room.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
     NewSessionComponent,
     LandingComponent,
     JoinSessionComponent,
-    WaitingRoomComponent
+    WaitingRoomComponent,
+    GameRoomComponent
   ],
   imports: [
     BrowserModule,

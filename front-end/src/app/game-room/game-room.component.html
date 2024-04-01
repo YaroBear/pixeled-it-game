@@ -1,0 +1,48 @@
+<div class="flex justify-center space-x-4">
+  <canvas
+    #canvasOriginal
+    width="500px"
+    height="500px"
+    id="canvas-original"
+  ></canvas>
+  <div id="editor" style="position: relative">
+    <canvas
+      #canvasGridUnderlay
+      class="border border-black"
+      width="500px"
+      height="500px"
+      id="canvas-grid-underlay"
+      style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        pointer-events: none;
+      "
+    ></canvas>
+    <canvas
+      #canvasGrid
+      class="border border-black"
+      width="500px"
+      height="500px"
+      id="canvas-grid"
+    ></canvas>
+    <div>
+      <input #colorPicker type="color" id="color-picker" value="#ff0000" />
+      <button
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        id="toggle-grid-layer-button"
+        (click)="toggleGridLayer()"
+      >
+        Toggle Grid Layer
+      </button>
+      <button
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        id="finish-drawing-button"
+        (click)="finishDrawing()"
+      >
+        Finish Drawing
+      </button>
+    </div>
+  </div>
+</div>
