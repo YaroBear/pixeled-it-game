@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SessionService } from '../services/session.service';
+import { SessionStore } from '../services/session.service';
 import { Subject, takeUntil } from 'rxjs';
 import { SessionWsService, UpdateUsersResponse } from '../services/session-ws.service';
 
@@ -31,11 +31,18 @@ export class WaitingRoomComponent implements OnInit, OnDestroy {
       });
 
     this.sessionWsService.updateUsers(this.sessionId);
+    this.setSessionHost();
   }
 
   ngOnDestroy(): void {
     this._destroyed$.next(undefined);
     this._destroyed$.complete();
+  }
+
+  private setSessionHost() {
+    const sessionStore: string | null = localStorage.getItem(this.sessionId.toString());
+    const sessionStoreObj: SessionStore = JSON.parse(sessionStore!);
+    this.isSessionHost = sessionStoreObj.sessionHost;
   }
 
   startGame() {
