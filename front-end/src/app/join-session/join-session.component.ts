@@ -34,7 +34,7 @@ export class JoinSessionComponent implements OnInit, OnDestroy {
   }
 
   joinSession() {
-    const { sessionId, password, name } = this.sessionFormGroup.value;
+    const { sessionId, password, name } = this.sessionFormGroup.getRawValue();
     this.sessionService.joinSession(sessionId!, password!, name!).subscribe(() => {
       this.router.navigate(['waiting-room', sessionId]);
     });
