@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { SessionWsService } from '../services/session-ws.service';
 import { Subject, takeUntil } from 'rxjs';
+import { SessionService } from '../services/session.service';
 
 @Component({
   selector: 'app-join-session',
@@ -22,7 +23,7 @@ export class JoinSessionComponent implements OnInit, OnDestroy {
     name: new FormControl(null, [Validators.required]),
   });
 
-  constructor(private route: ActivatedRoute, private sessionWsService: SessionWsService, private router: Router) { }
+  constructor(private route: ActivatedRoute, private sessionService: SessionService, private router: Router) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];
@@ -34,15 +35,9 @@ export class JoinSessionComponent implements OnInit, OnDestroy {
 
   joinSession() {
     const { sessionId, password, name } = this.sessionFormGroup.value;
-    this.sessionWsService.subject()
-      .pipe(takeUntil(this._destroyed$))
-      .subscribe((msg: any) => {
-        if (msg.type === 'error') {
-          this.error = msg.message;
-        }
-        this.router.navigate(['waiting-room', sessionId]);
-      });
-    this.sessionWsService.joinSession(sessionId!, password!, name!);
+    this.sessionService.joinSession(sessionId!, password!, name!).subscribe(() => {
+      this.router.navigate(['waiting-room', sessionId]);
+    });
   }
 
   ngOnDestroy(): void {

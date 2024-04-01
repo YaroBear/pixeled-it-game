@@ -17,15 +17,21 @@ async function getSession(id) {
   return session[0];
 }
 
-async function joinSession(name, sessionId) {
+async function joinSession(name, sessionId, token) {
   await sql`
-        insert into user_session (name, session_id)
-        select ${name}, ${sessionId}
-        where not exists (
-            select 1 from user_session
-            where name = ${name} and session_id = ${sessionId}
-        )
+        insert into user_session (name, session_id, token)
+        values (${name}, ${sessionId}, ${token})
+        on conflict on constraint unique_name_session_id
+        do update set token = ${token}
     `;
+}
+
+async function checkValidSessionToken(sessionId, token) {
+  const exists = await sql`
+        select 1 from user_session
+        where session_id = ${sessionId} and token = ${token}
+    `;
+  return exists.length > 0;
 }
 
 async function getUsersInSession(sessionId) {
@@ -36,4 +42,10 @@ async function getUsersInSession(sessionId) {
   return users;
 }
 
-export { createSession, getSession, joinSession, getUsersInSession };
+export {
+  createSession,
+  getSession,
+  joinSession,
+  getUsersInSession,
+  checkValidSessionToken,
+};

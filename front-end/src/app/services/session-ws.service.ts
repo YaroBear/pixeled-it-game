@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, filter } from 'rxjs';
-import { webSocket } from 'rxjs/webSocket';
+import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
 
 export interface UpdateUsersResponse {
   type: "updateUsers";
@@ -12,10 +12,15 @@ export interface UpdateUsersResponse {
 })
 export class SessionWsService {
 
-  private readonly subject$ = webSocket('ws://localhost:8080');
+  private subject$: WebSocketSubject<any> | undefined;
   private readonly usersReplaySubject$ = new ReplaySubject<UpdateUsersResponse>();
 
   constructor() {
+  }
+
+  connect(sessionId: number, token: string, name: string) {
+    this.subject$ = webSocket('ws://localhost:3000/session/' + sessionId + '/join/' + token);
+    this.subject$.next({ type: 'joinSession', sessionId: sessionId });
     this.subject$.subscribe(
       {
         complete: () => console.log('complete'),
@@ -30,8 +35,8 @@ export class SessionWsService {
     );
   }
 
-  joinSession(sessionId: number, password: string, name: string) {
-    this.subject$.next({ type: 'joinSession', sessionId: sessionId, password: password, name: name });
+  updateUsers(sessionId: number) {
+    this.subject$?.next({ type: 'updateUsers', sessionId: sessionId });
   }
 
   usersSubject$(): Observable<UpdateUsersResponse> {

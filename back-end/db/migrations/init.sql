@@ -7,7 +7,9 @@ CREATE TABLE user_session (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     session_id INT NOT NULL,
-    FOREIGN KEY (session_id) REFERENCES session(id)
+    token VARCHAR(255) NOT NULL,
+    FOREIGN KEY (session_id) REFERENCES session(id),
+    CONSTRAINT unique_name_session_id UNIQUE (name, session_id)
 );
 
 CREATE TABLE original_picture (

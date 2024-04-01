@@ -1,4 +1,4 @@
-import { createSession, getSession } from "./db/sessions.js";
+import { createSession, getSession, joinSession } from "./db/sessions.js";
 import { createPicture, getPicturesBySessionId } from "./db/pictures.js";
 
 import express from "express";
@@ -6,7 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
 import upload from "./services/file-storage.js";
-import wss from "./ws-server.js";
+import { updateUsers, upgradeServer } from "./ws-server.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,9 +17,11 @@ app.use(cors());
 app.use(express.json());
 app.use("/img", express.static(path.join(__dirname, "img")));
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
+
+upgradeServer(server);
 
 app.post("/session", async (req, res) => {
   const { password } = req.body;
@@ -27,6 +29,23 @@ app.post("/session", async (req, res) => {
   const session = await createSession(password);
 
   res.json(session);
+});
+
+app.post("/session/:id/join", async (req, res) => {
+  const { id } = req.params;
+  const { name, password } = req.body;
+
+  const session = await getSession(id);
+  if (session.password !== password) {
+    return res.status(401).json({ error: "Invalid password" });
+  }
+
+  const randomToken = Math.random().toString(36).slice(2);
+  await joinSession(name, id, randomToken);
+
+  await updateUsers(id);
+
+  res.json({ token: randomToken });
 });
 
 app.post(
@@ -68,3 +87,5 @@ app.get("/session/:id/pictures", async (req, res) => {
 
   res.json(pictures);
 });
+
+export default server;

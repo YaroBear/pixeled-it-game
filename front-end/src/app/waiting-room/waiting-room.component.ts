@@ -18,23 +18,19 @@ export class WaitingRoomComponent implements OnInit, OnDestroy {
   sessionId: number = 0;
   isSessionHost: boolean = false;
 
-  constructor(private route: ActivatedRoute, private sessionService: SessionService, private sessionWsService: SessionWsService) { }
+  constructor(private route: ActivatedRoute, private sessionWsService: SessionWsService) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];
     this.sessionId = Number(id);
-
-    this.sessionService.sessionHostMapReplaySubject
-      .pipe(takeUntil(this._destroyed$))
-      .subscribe((sessionHostMap) => {
-        this.isSessionHost = sessionHostMap.get(this.sessionId) === true;
-      });
 
     this.sessionWsService.usersSubject$()
       .pipe(takeUntil(this._destroyed$))
       .subscribe((updatedUsers: UpdateUsersResponse) => {
         this.users = updatedUsers.users.map(u => u.name);
       });
+
+    this.sessionWsService.updateUsers(this.sessionId);
   }
 
   ngOnDestroy(): void {

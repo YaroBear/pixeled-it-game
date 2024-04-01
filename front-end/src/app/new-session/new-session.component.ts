@@ -19,6 +19,7 @@ export class NewSessionComponent {
 
   newSessionFormGroup = new FormGroup({
     pictures: new FormControl(null, [Validators.required]),
+    name: new FormControl(null, [Validators.required]),
     password: new FormControl(null, [Validators.required]),
     gameTime: new FormControl(15),
   });
@@ -27,16 +28,17 @@ export class NewSessionComponent {
 
   createSession() {
     const password = this.newSessionFormGroup.get('password')?.value!;
+    const name = this.newSessionFormGroup.get('name')?.value!;
     let sessionId: number;
 
-    this.sessionService.createSession(password).pipe(
+    this.sessionService.createSession(name, password).pipe(
       switchMap(async (id) => {
         sessionId = id;
         return this.uploadPictures(sessionId, password);
       })
     ).subscribe(() => {
       console.log("Session Created. Pictures uploaded");
-      this.router.navigate(['waiting-room', sessionId]); // Use sessionId variable
+      this.router.navigate(['waiting-room', sessionId]);
     });
   }
 
