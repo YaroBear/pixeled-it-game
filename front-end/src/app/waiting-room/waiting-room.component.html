@@ -1,6 +1,15 @@
 <div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
   <h1 class="text-4xl font-bold mb-10">Session ID: {{ sessionId }}</h1>
 
+  <div class="flex flex-col items-center gap-4 mb-10">
+    <h3 class="text-xl mb-2">Waiting for users to join...</h3>
+
+    <audio controls autoplay>
+      <source src="assets/elevator-music.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+
   <div class="flex flex-col gap-4 mb-10 w-1/2">
     <label class="font-bold mb-1">Users Joined</label>
     <ul class="border-gray-300 p-2 rounded">
