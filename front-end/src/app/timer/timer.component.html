@@ -1,0 +1,8 @@
+<div>
+  <h2
+    [ngClass]="minutesLeft < 1 ? 'text-red-500' : 'text-blue-500'"
+    class="text-4xl font-bold mb-10"
+  >
+    {{ minutesLeft }}:{{ secondsLeft }}
+  </h2>
+</div>

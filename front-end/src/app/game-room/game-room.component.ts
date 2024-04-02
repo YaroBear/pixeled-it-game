@@ -104,10 +104,18 @@ export class GameRoomComponent implements AfterViewInit {
       this.canvasGridUnderlay?.nativeElement.style.display === "none" ? "block" : "none";
   }
 
+  onTimeOver(event: boolean) {
+    this.finishDrawing();
+  }
+
   finishDrawing() {
     const dataURL = this.canvasGrid?.nativeElement.toDataURL("image/png");
     const newTab = window.open("about:blank", "image from canvas")!;
     newTab.document.write("<img src='" + dataURL + "' alt='from canvas'/>");
+  }
+
+  clearDrawing() {
+    this.ctxGrid?.clearRect(0, 0, 500, 500);
   }
 
 }

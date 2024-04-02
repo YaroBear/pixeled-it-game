@@ -1,48 +1,71 @@
-<div class="flex justify-center space-x-4">
-  <canvas
-    #canvasOriginal
-    width="500px"
-    height="500px"
-    id="canvas-original"
-  ></canvas>
-  <div id="editor" style="position: relative">
+<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+  <h1 class="text-4xl font-bold mb-10">Pixeled It</h1>
+
+  <app-timer [minutes]="1" (timeOver)="onTimeOver($event)"></app-timer>
+
+  <div class="flex justify-center space-x-4 mb-10">
     <canvas
-      #canvasGridUnderlay
+      #canvasOriginal
       class="border border-black"
       width="500px"
       height="500px"
-      id="canvas-grid-underlay"
-      style="
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1;
-        pointer-events: none;
-      "
+      id="canvas-original"
     ></canvas>
-    <canvas
-      #canvasGrid
-      class="border border-black"
-      width="500px"
-      height="500px"
-      id="canvas-grid"
-    ></canvas>
-    <div>
-      <input #colorPicker type="color" id="color-picker" value="#ff0000" />
-      <button
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        id="toggle-grid-layer-button"
-        (click)="toggleGridLayer()"
-      >
-        Toggle Grid Layer
-      </button>
-      <button
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        id="finish-drawing-button"
-        (click)="finishDrawing()"
-      >
-        Finish Drawing
-      </button>
+    <div id="editor" style="position: relative">
+      <canvas
+        #canvasGridUnderlay
+        class="border border-black"
+        width="500px"
+        height="500px"
+        id="canvas-grid-underlay"
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 1;
+          pointer-events: none;
+        "
+      ></canvas>
+      <canvas
+        #canvasGrid
+        class="border border-black"
+        width="500px"
+        height="500px"
+        id="canvas-grid"
+      ></canvas>
+
+      <div id="controls" class="flex flex-row justify-evenly py-2">
+        <input
+          #colorPicker
+          type="color"
+          id="color-picker"
+          value="#ff0000"
+          class="rounded h-10"
+        />
+
+        <button
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          id="toggle-grid-layer-button"
+          (click)="toggleGridLayer()"
+        >
+          Toggle Grid
+        </button>
+
+        <button
+          class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          (click)="clearDrawing()"
+        >
+          Clear
+        </button>
+
+        <button
+          class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          id="finish-drawing-button"
+          (click)="finishDrawing()"
+        >
+          Finish
+        </button>
+      </div>
     </div>
   </div>
 </div>
