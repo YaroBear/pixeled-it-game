@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { SessionWsService, StartGameResponse } from '../services/session-ws.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-game-room',
@@ -19,8 +21,16 @@ export class GameRoomComponent implements AfterViewInit {
   ctxGridOverlay: CanvasRenderingContext2D | undefined;
   boundDraw: any;
 
-  constructor(private httpClient: HttpClient) {
+  endTime: Date | undefined;
+
+  constructor(private httpClient: HttpClient, private sessionWsService: SessionWsService, private activatedRoute: ActivatedRoute) {
     this.boundDraw = this.draw.bind(this);
+
+    const sessionId = activatedRoute.snapshot.params['id'];
+
+    this.sessionWsService.startGameSubject$(Number(sessionId)).subscribe((startGameResponse: StartGameResponse) => {
+      this.endTime = new Date(startGameResponse.endTime);
+    });
   }
 
   ngAfterViewInit(): void {

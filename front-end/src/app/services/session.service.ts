@@ -30,9 +30,10 @@ export class SessionService {
 
   constructor(private httpClient: HttpClient, private sessionWsService: SessionWsService) { }
 
-  createSession(name: string, password: string): Observable<number> {
+  createSession(name: string, password: string, timeLimit: number): Observable<number> {
     const body = {
-      password: password
+      password: password,
+      timeLimit: timeLimit
     };
 
     let sessionId: number;

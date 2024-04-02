@@ -21,7 +21,7 @@ export class NewSessionComponent {
     pictures: new FormControl(null, [Validators.required]),
     name: new FormControl(null, [Validators.required]),
     password: new FormControl(null, [Validators.required]),
-    gameTime: new FormControl(15),
+    timeLimit: new FormControl(15),
   });
 
   constructor(private sessionService: SessionService, private sanitizer: DomSanitizer, private router: Router) { }
@@ -29,9 +29,10 @@ export class NewSessionComponent {
   createSession() {
     const password = this.newSessionFormGroup.get('password')?.value!;
     const name = this.newSessionFormGroup.get('name')?.value!;
+    const timeLimit = this.newSessionFormGroup.get('timeLimit')?.value!;
     let sessionId: number;
 
-    this.sessionService.createSession(name, password).pipe(
+    this.sessionService.createSession(name, password, timeLimit).pipe(
       switchMap(async (id) => {
         sessionId = id;
         return this.uploadPictures(sessionId, password);

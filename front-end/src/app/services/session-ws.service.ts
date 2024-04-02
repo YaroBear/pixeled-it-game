@@ -4,7 +4,14 @@ import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
 
 export interface UpdateUsersResponse {
   type: "updateUsers";
+  sessionId: number;
   users: { name: string; }[];
+}
+
+export interface StartGameResponse {
+  type: "startGame";
+  sessionId: number;
+  endTime: Date;
 }
 
 @Injectable({
@@ -14,6 +21,7 @@ export class SessionWsService {
 
   private subject$: WebSocketSubject<any> | undefined;
   private readonly usersReplaySubject$ = new ReplaySubject<UpdateUsersResponse>();
+  private readonly startGameReplaySubject$ = new ReplaySubject<StartGameResponse>();
   connected: boolean = false;
 
   constructor() {
@@ -32,7 +40,10 @@ export class SessionWsService {
           if (msg.type === 'updateUsers') {
             this.usersReplaySubject$.next(msg);
           }
-        },
+          if (msg.type === 'startGame') {
+            this.startGameReplaySubject$.next(msg);
+          }
+        }
       }
     );
   }
@@ -41,13 +52,23 @@ export class SessionWsService {
     this.subject$?.next({ type: 'updateUsers', sessionId: sessionId });
   }
 
-  usersSubject$(): Observable<UpdateUsersResponse> {
+  usersSubject$(sessionId: number): Observable<UpdateUsersResponse> {
     return this.usersReplaySubject$.pipe(
-      filter((msg: any) => msg.type === 'updateUsers')
+      filter((msg: any) => msg.type === 'updateUsers' && msg.sessionId === sessionId)
+    );
+  }
+
+  startGameSubject$(sessionId: number): Observable<StartGameResponse> {
+    return this.startGameReplaySubject$.pipe(
+      filter((msg: any) => msg.type === 'startGame' && msg.sessionId === sessionId)
     );
   }
 
   subject() {
     return this.subject$;
+  }
+
+  startGame(sessionId: number) {
+    this.subject$?.next({ type: 'startGame', sessionId: sessionId });
   }
 }

@@ -1,9 +1,9 @@
 import sql from "./db.js";
 
-async function createSession(password) {
+async function createSession(password, timeLimit) {
   const session = await sql`
-                insert into session (password)
-                values (${password})
+                insert into session (password, time_limit)
+                values (${password}, ${timeLimit})
                 returning id
         `;
   return session[0].id;
@@ -24,6 +24,20 @@ async function joinSession(name, sessionId, token) {
         on conflict on constraint unique_name_session_id
         do update set token = ${token}
     `;
+}
+
+async function startSession(sessionId) {
+  const session = await getSession(sessionId);
+
+  const timeLimitMinutes = session.time_limit;
+
+  const updatedSession = await sql`
+        update session
+        set started = true, end_time = now() + ${timeLimitMinutes} * interval '1 minute'
+        where id = ${sessionId}
+        returning end_time
+    `;
+  return updatedSession[0].end_time;
 }
 
 async function checkValidSessionToken(sessionId, token) {
@@ -48,4 +62,5 @@ export {
   joinSession,
   getUsersInSession,
   checkValidSessionToken,
+  startSession,
 };

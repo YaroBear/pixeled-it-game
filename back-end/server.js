@@ -24,9 +24,9 @@ const server = app.listen(3000, () => {
 upgradeServer(server);
 
 app.post("/session", async (req, res) => {
-  const { password } = req.body;
+  const { password, timeLimit } = req.body;
 
-  const session = await createSession(password);
+  const session = await createSession(password, timeLimit);
 
   res.json(session);
 });

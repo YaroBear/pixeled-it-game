@@ -1,5 +1,9 @@
 import WebSocket, { WebSocketServer } from "ws";
-import { getUsersInSession, checkValidSessionToken } from "./db/sessions.js";
+import {
+  getUsersInSession,
+  checkValidSessionToken,
+  startSession,
+} from "./db/sessions.js";
 
 const wss = new WebSocketServer({
   noServer: true,
@@ -55,7 +59,24 @@ function upgradeServer(server) {
       }
       if (type === "updateUsers") {
         const users = await getUsersInSession(sessionId);
-        ws.send(JSON.stringify({ type: "updateUsers", users }));
+        ws.send(
+          JSON.stringify({ type: "updateUsers", users, sessionId: sessionId })
+        );
+      }
+      if (type === "startGame") {
+        const endTime = await startSession(sessionId);
+        const clients = sessionClients.get(sessionId) || [];
+        clients.forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(
+              JSON.stringify({
+                type: "startGame",
+                endTime,
+                sessionId: sessionId,
+              })
+            );
+          }
+        });
       }
     });
   });

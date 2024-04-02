@@ -9,7 +9,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class TimerComponent implements OnInit {
 
   @Input()
-  minutes: number = 0;
+  endTime: Date = new Date();
 
   minutesLeft: number = 0;
   secondsLeft: number = 0;
@@ -27,7 +27,9 @@ export class TimerComponent implements OnInit {
   }
 
   private startTimer() {
-    this.minutesLeft = this.minutes;
+    const currentDateUtc = new Date(new Date().toUTCString());
+    const differenceMs = this.endTime.getTime() - currentDateUtc.getTime();
+    this.minutesLeft = Math.floor((differenceMs / 1000) / 60);
     this.secondsLeft = 0;
     this.intervalId = setInterval(() => {
       this.secondsLeft--;
@@ -40,10 +42,6 @@ export class TimerComponent implements OnInit {
         clearInterval(this.intervalId);
       }
     }, 1000);
-  }
-
-  private syncTime() {
-
   }
 
 }

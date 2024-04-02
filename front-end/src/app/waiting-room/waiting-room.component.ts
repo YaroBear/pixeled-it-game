@@ -24,7 +24,7 @@ export class WaitingRoomComponent implements OnInit, OnDestroy {
     const id = this.route.snapshot.params['id'];
     this.sessionId = Number(id);
 
-    this.sessionWsService.usersSubject$()
+    this.sessionWsService.usersSubject$(this.sessionId)
       .pipe(takeUntil(this._destroyed$))
       .subscribe((updatedUsers: UpdateUsersResponse) => {
         this.users = updatedUsers.users.map(u => u.name);
@@ -46,6 +46,7 @@ export class WaitingRoomComponent implements OnInit, OnDestroy {
   }
 
   startGame() {
+    this.sessionWsService.startGame(this.sessionId);
     this.router.navigate(['game-room', this.sessionId]);
   }
 

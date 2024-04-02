@@ -1,5 +1,9 @@
 CREATE TABLE session (
     id SERIAL PRIMARY KEY,
+    started boolean NOT NULL DEFAULT false,
+    ended boolean NOT NULL DEFAULT false,
+    time_limit INT NOT NULL,
+    end_time TIMESTAMPTZ NULL,
     password VARCHAR(255) NOT NULL
 );
 
