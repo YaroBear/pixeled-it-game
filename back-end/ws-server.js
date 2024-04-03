@@ -16,6 +16,7 @@ const sessionClients = new Map();
 const startGame = "startGame";
 const endGame = "endGame";
 const joinSession = "joinSession";
+const joinGame = "joinGame";
 
 function onSocketError(err) {
   console.error(err);
@@ -110,6 +111,13 @@ function upgradeServer(server) {
         const endTime = await startSession(sessionId);
         emitAllClients(sessionId, { type: startGame, endTime, sessionId });
         startTimer(sessionId, endTime);
+      }
+      if (type === joinGame) {
+        const session = await getSession(sessionId);
+        if (session.started) {
+          const endTime = session.end_time;
+          emitSingleClient(ws, { type: joinGame, endTime, sessionId });
+        }
       }
     });
   });

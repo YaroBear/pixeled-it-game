@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { SessionWsService, StartGameResponse } from '../services/session-ws.service';
+import { JoinGameResponse, SessionWsService } from '../services/session-ws.service';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -28,13 +28,15 @@ export class GameRoomComponent implements AfterViewInit {
 
     const sessionId = activatedRoute.snapshot.params['id'];
 
-    this.sessionWsService.startGameSubject$(Number(sessionId)).subscribe((startGameResponse: StartGameResponse) => {
-      this.endTime = new Date(startGameResponse.endTime);
+    this.sessionWsService.joinGameSubject$(Number(sessionId)).subscribe((joinGameResponse: JoinGameResponse) => {
+      this.endTime = joinGameResponse.endTime;
     });
 
     this.sessionWsService.endGameSubject$(Number(sessionId)).subscribe(() => {
       this.finishDrawing();
     });
+
+    this.sessionWsService.joinGame(Number(sessionId));
   }
 
   ngAfterViewInit(): void {

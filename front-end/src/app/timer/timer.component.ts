@@ -9,7 +9,13 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class TimerComponent implements OnInit {
 
   @Input()
-  endTime: Date = new Date();
+  set endTime(value: Date) {
+    if (value) {
+      this._endTime = new Date(value);
+      this.startTimer();
+    }
+  }
+  _endTime: Date = new Date();
 
   minutesLeft: number = 0;
   secondsLeft: number = 0;
@@ -23,12 +29,11 @@ export class TimerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.startTimer();
   }
 
   private startTimer() {
     const currentDateUtc = new Date(new Date().toUTCString());
-    const differenceMs = this.endTime.getTime() - currentDateUtc.getTime();
+    const differenceMs = this._endTime.getTime() - currentDateUtc.getTime();
     this.minutesLeft = Math.floor((differenceMs / 1000) / 60);
     this.secondsLeft = Math.floor((differenceMs / 1000) % 60);
     this.intervalId = setInterval(() => {

@@ -3,9 +3,15 @@ import { Router } from '@angular/router';
 import { Observable, ReplaySubject, filter } from 'rxjs';
 import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
 
+const joinSession = 'joinSession';
+const startGame = 'startGame';
+const endGame = 'endGame';
+const joinGame = 'joinGame';
+
 export type joinSessionType = 'joinSession';
 export type startGameType = 'startGame';
 export type endGameType = 'endGame';
+export type joinGameType = 'joinGame';
 
 export interface JoinSessionResponse {
   type: joinSessionType;
@@ -15,6 +21,12 @@ export interface JoinSessionResponse {
 
 export interface StartGameResponse {
   type: startGameType;
+  sessionId: number;
+  endTime: Date;
+}
+
+export interface JoinGameResponse {
+  type: joinGameType;
   sessionId: number;
   endTime: Date;
 }
@@ -58,28 +70,38 @@ export class SessionWsService {
   }
 
   joinSession(sessionId: number) {
-    this.subject$?.next({ type: 'joinSession', sessionId: sessionId });
+    this.subject$?.next({ type: joinSession, sessionId: sessionId });
   }
 
   startGame(sessionId: number) {
-    this.subject$?.next({ type: 'startGame', sessionId: sessionId });
+    this.subject$?.next({ type: startGame, sessionId: sessionId });
+  }
+
+  joinGame(sessionId: number) {
+    this.subject$?.next({ type: joinGame, sessionId: sessionId });
   }
 
   joinSessionSubject$(sessionId: number): Observable<JoinSessionResponse> {
     return this.subject$!.pipe(
-      filter((msg: any) => msg.type === 'joinSession' && msg.sessionId === sessionId)
+      filter((msg: any) => msg.type === joinSession && msg.sessionId === sessionId)
     );
   }
 
   startGameSubject$(sessionId: number): Observable<StartGameResponse> {
     return this.replaySubject$!.pipe(
-      filter((msg: any) => msg.type === 'startGame' && msg.sessionId === sessionId)
+      filter((msg: any) => msg.type === startGame && msg.sessionId === sessionId)
     );
   }
 
   endGameSubject$(sessionId: number): Observable<EndGameResponse> {
     return this.subject$!.pipe(
-      filter((msg: any) => msg.type === 'endGame' && msg.sessionId === sessionId)
+      filter((msg: any) => msg.type === endGame && msg.sessionId === sessionId)
+    );
+  }
+
+  joinGameSubject$(sessionId: number): Observable<JoinGameResponse> {
+    return this.subject$!.pipe(
+      filter((msg: any) => msg.type === joinGame && msg.sessionId === sessionId)
     );
   }
 }
