@@ -1,10 +1,12 @@
 import WebSocket, { WebSocketServer } from "ws";
 import {
-  getUsersInSession,
   checkValidSessionToken,
   startSession,
   endSession,
   getSession,
+  getUserNamesInSession,
+  assignUsersRandomPictures,
+  getPictureUrlByUserSessionId,
 } from "./db/sessions.js";
 
 const wss = new WebSocketServer({
@@ -93,14 +95,14 @@ function upgradeServer(server) {
     // });
 
     ws.on("message", async (message) => {
-      const { type, sessionId } = JSON.parse(message);
+      const { type, sessionId, userSessionId } = JSON.parse(message);
 
       if (type === joinSession) {
         if (!sessionClients.has(sessionId)) {
           sessionClients.set(sessionId, []);
         }
         sessionClients.get(sessionId).push(ws);
-        const users = await getUsersInSession(sessionId);
+        const users = await getUserNamesInSession(sessionId);
         await emitAllClients(sessionId, {
           type: joinSession,
           sessionId,
@@ -108,15 +110,24 @@ function upgradeServer(server) {
         });
       }
       if (type === startGame) {
+        await assignUsersRandomPictures(sessionId);
         const endTime = await startSession(sessionId);
         emitAllClients(sessionId, { type: startGame, endTime, sessionId });
         startTimer(sessionId, endTime);
       }
       if (type === joinGame) {
         const session = await getSession(sessionId);
+        const assignedPictureUrl = await getPictureUrlByUserSessionId(
+          userSessionId
+        );
         if (session.started) {
           const endTime = session.end_time;
-          emitSingleClient(ws, { type: joinGame, endTime, sessionId });
+          emitSingleClient(ws, {
+            type: joinGame,
+            endTime,
+            sessionId,
+            pictureUrl: assignedPictureUrl,
+          });
         }
       }
     });

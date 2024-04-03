@@ -32,3 +32,12 @@ CREATE TABLE submission (
     FOREIGN KEY (session_id) REFERENCES session(id),
     FOREIGN KEY (original_picture_id) REFERENCES original_picture(id)
 );
+
+CREATE TABLE user_session_picture_assignment (
+    id SERIAL PRIMARY KEY,
+    user_session_id INT NOT NULL,
+    picture_id INT NOT NULL,
+    FOREIGN KEY (user_session_id) REFERENCES user_session(id),
+    FOREIGN KEY (picture_id) REFERENCES original_picture(id),
+    CONSTRAINT unique_user_session_id_picture_id UNIQUE (user_session_id, picture_id)
+);

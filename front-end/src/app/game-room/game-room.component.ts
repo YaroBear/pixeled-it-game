@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { JoinGameResponse, SessionWsService } from '../services/session-ws.service';
 import { ActivatedRoute } from '@angular/router';
+import { SessionStore } from '../services/session.service';
 
 @Component({
   selector: 'app-game-room',
@@ -30,20 +31,23 @@ export class GameRoomComponent implements AfterViewInit {
 
     this.sessionWsService.joinGameSubject$(Number(sessionId)).subscribe((joinGameResponse: JoinGameResponse) => {
       this.endTime = joinGameResponse.endTime;
+      this.setup(`http://127.0.0.1:3000/${joinGameResponse.pictureUrl}`);
     });
 
     this.sessionWsService.endGameSubject$(Number(sessionId)).subscribe(() => {
       this.finishDrawing();
     });
 
-    this.sessionWsService.joinGame(Number(sessionId));
+    const sessionStore = localStorage.getItem(sessionId)!;
+    const sessionStoreObj: SessionStore = JSON.parse(sessionStore);
+
+    this.sessionWsService.joinGame(Number(sessionId), sessionStoreObj.userSessionId);
   }
 
   ngAfterViewInit(): void {
     this.originalContext = this.originalCanvas?.nativeElement.getContext("2d")!;
     this.ctxGrid = this.canvasGrid?.nativeElement?.getContext("2d")!;
     this.ctxGridOverlay = this.canvasGridUnderlay?.nativeElement.getContext("2d")!;
-    this.setup("http://127.0.0.1:3000/img/obama.jpg");
   }
 
   setup(imgUrl: string) {

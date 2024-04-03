@@ -29,6 +29,7 @@ export interface JoinGameResponse {
   type: joinGameType;
   sessionId: number;
   endTime: Date;
+  pictureUrl: string;
 }
 
 export interface EndGameResponse {
@@ -77,8 +78,8 @@ export class SessionWsService {
     this.subject$?.next({ type: startGame, sessionId: sessionId });
   }
 
-  joinGame(sessionId: number) {
-    this.subject$?.next({ type: joinGame, sessionId: sessionId });
+  joinGame(sessionId: number, userSessionId: number) {
+    this.subject$?.next({ type: joinGame, sessionId: sessionId, userSessionId: userSessionId });
   }
 
   joinSessionSubject$(sessionId: number): Observable<JoinSessionResponse> {

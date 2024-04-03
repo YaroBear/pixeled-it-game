@@ -41,9 +41,9 @@ app.post("/session/:id/authenticate", async (req, res) => {
   }
 
   const randomToken = Math.random().toString(36).slice(2);
-  await joinSession(name, id, randomToken);
+  const userSessionId = await joinSession(name, id, randomToken);
 
-  res.json({ token: randomToken });
+  res.json({ token: randomToken, userSessionId: userSessionId });
 });
 
 app.post(

@@ -18,12 +18,14 @@ async function getSession(id) {
 }
 
 async function joinSession(name, sessionId, token) {
-  await sql`
+  const userSession = await sql`
         insert into user_session (name, session_id, token)
         values (${name}, ${sessionId}, ${token})
         on conflict on constraint unique_name_session_id
         do update set token = ${token}
+        returning id
     `;
+  return userSession[0].id;
 }
 
 async function startSession(sessionId) {
@@ -59,7 +61,7 @@ async function checkValidSessionToken(sessionId, token) {
   return exists.length > 0;
 }
 
-async function getUsersInSession(sessionId) {
+async function getUserNamesInSession(sessionId) {
   const users = await sql`
         select name from user_session
         where session_id = ${sessionId}
@@ -67,12 +69,65 @@ async function getUsersInSession(sessionId) {
   return users;
 }
 
+async function getUsersInSession(sessionId) {
+  const users = await sql`
+        select * from user_session
+        where session_id = ${sessionId}
+    `;
+  return users;
+}
+
+async function getPicturesBySessionId(sessionId) {
+  const pictures = await sql`
+        select * from original_picture
+        where session_id = ${sessionId}
+    `;
+  return pictures;
+}
+
+async function assignUsersRandomPictures(sessionId) {
+  const users = await getUsersInSession(sessionId);
+  const pictures = await getPicturesBySessionId(sessionId);
+
+  const numUsers = users.length;
+  const numPictures = pictures.length;
+  const picturesPerUser = Math.floor(numPictures / numUsers);
+
+  users.forEach(async (user, index) => {
+    const startIndex = index * picturesPerUser;
+    const endIndex = startIndex + picturesPerUser;
+    const assignedPictures = pictures.slice(startIndex, endIndex);
+
+    assignedPictures.forEach(async (picture) => {
+      await sql`
+        insert into user_session_picture_assignment (user_session_id, picture_id)
+        values (${user.id}, ${picture.id})
+      `;
+    });
+  });
+}
+
+async function getPictureUrlByUserSessionId(userSessionId) {
+  const picture = await sql`
+      select op.path
+      from user_session us
+      join user_session_picture_assignment uspa
+          on uspa.user_session_id = us.id
+      join original_picture op
+          on op.id = uspa.picture_id
+      where us.id = ${userSessionId}
+    `;
+  return picture[0].path;
+}
+
 export {
   createSession,
   getSession,
   joinSession,
-  getUsersInSession,
+  getUserNamesInSession,
   checkValidSessionToken,
   startSession,
   endSession,
+  assignUsersRandomPictures,
+  getPictureUrlByUserSessionId,
 };

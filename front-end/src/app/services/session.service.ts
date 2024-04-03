@@ -7,10 +7,12 @@ export interface SessionStore {
   name: string;
   sessionHost: boolean;
   token: string;
+  userSessionId: number;
 };
 
-interface TokenResponse {
+interface AuthenticateResponse {
   token: string;
+  userSessionId: number;
 }
 
 const jsonContentTypeHeaders = {
@@ -24,9 +26,6 @@ const jsonContentTypeHeaders = {
   providedIn: 'root'
 })
 export class SessionService {
-
-  sessionStoreMap: Map<number, SessionStore> = new Map();
-  sessionStoreReplaySubject = new ReplaySubject<Map<number, SessionStore>>();
 
   constructor(private httpClient: HttpClient, private sessionWsService: SessionWsService) { }
 
@@ -48,24 +47,23 @@ export class SessionService {
       );
   }
 
-  joinSession(sessionId: number, password: string, name: string, isSessionHost: boolean = false): Observable<TokenResponse> {
+  joinSession(sessionId: number, password: string, name: string, isSessionHost: boolean = false): Observable<AuthenticateResponse> {
     const body = {
       password: password,
       name: name
     };
 
-    return this.httpClient.post<TokenResponse>(`http://localhost:3000/session/${sessionId}/authenticate`, body, jsonContentTypeHeaders)
+    return this.httpClient.post<AuthenticateResponse>(`http://localhost:3000/session/${sessionId}/authenticate`, body, jsonContentTypeHeaders)
       .pipe(
-        tap((tokenResponse: TokenResponse) => {
-          this.sessionWsService.connect(sessionId, tokenResponse.token, name);
+        tap((authResponse: AuthenticateResponse) => {
+          this.sessionWsService.connect(sessionId, authResponse.token, name);
           const sessionStore: SessionStore = {
             "name": name,
             "sessionHost": isSessionHost,
-            "token": tokenResponse.token
+            "token": authResponse.token,
+            "userSessionId": authResponse.userSessionId,
           };
           localStorage.setItem(String(sessionId), JSON.stringify(sessionStore));
-          this.sessionStoreMap.set(sessionId, sessionStore);
-          this.sessionStoreReplaySubject.next(this.sessionStoreMap);
         })
       );
   }
