@@ -6,7 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
 import upload from "./services/file-storage.js";
-import { updateUsers, upgradeServer } from "./ws-server.js";
+import { upgradeServer } from "./ws-server.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,7 +31,7 @@ app.post("/session", async (req, res) => {
   res.json(session);
 });
 
-app.post("/session/:id/join", async (req, res) => {
+app.post("/session/:id/authenticate", async (req, res) => {
   const { id } = req.params;
   const { name, password } = req.body;
 
@@ -42,8 +42,6 @@ app.post("/session/:id/join", async (req, res) => {
 
   const randomToken = Math.random().toString(36).slice(2);
   await joinSession(name, id, randomToken);
-
-  await updateUsers(id);
 
   res.json({ token: randomToken });
 });

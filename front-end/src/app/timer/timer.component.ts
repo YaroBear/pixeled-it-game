@@ -30,7 +30,7 @@ export class TimerComponent implements OnInit {
     const currentDateUtc = new Date(new Date().toUTCString());
     const differenceMs = this.endTime.getTime() - currentDateUtc.getTime();
     this.minutesLeft = Math.floor((differenceMs / 1000) / 60);
-    this.secondsLeft = 0;
+    this.secondsLeft = Math.floor((differenceMs / 1000) % 60);
     this.intervalId = setInterval(() => {
       this.secondsLeft--;
       if (this.secondsLeft < 0) {

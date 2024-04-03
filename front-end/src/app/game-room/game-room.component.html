@@ -1,11 +1,7 @@
 <div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
   <h1 class="text-4xl font-bold mb-10">Pixeled It</h1>
 
-  <app-timer
-    *ngIf="endTime"
-    [endTime]="endTime"
-    (timeOver)="onTimeOver($event)"
-  ></app-timer>
+  <app-timer *ngIf="endTime" [endTime]="endTime"></app-timer>
 
   <div class="flex justify-center space-x-4 mb-10">
     <canvas

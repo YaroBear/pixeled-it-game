@@ -31,6 +31,10 @@ export class GameRoomComponent implements AfterViewInit {
     this.sessionWsService.startGameSubject$(Number(sessionId)).subscribe((startGameResponse: StartGameResponse) => {
       this.endTime = new Date(startGameResponse.endTime);
     });
+
+    this.sessionWsService.endGameSubject$(Number(sessionId)).subscribe(() => {
+      this.finishDrawing();
+    });
   }
 
   ngAfterViewInit(): void {

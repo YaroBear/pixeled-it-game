@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SessionStore } from '../services/session.service';
 import { Subject, takeUntil } from 'rxjs';
-import { SessionWsService, UpdateUsersResponse } from '../services/session-ws.service';
+import { SessionWsService, JoinSessionResponse as JoinSessionResponse } from '../services/session-ws.service';
 
 @Component({
   selector: 'app-waiting-room',
@@ -18,19 +18,19 @@ export class WaitingRoomComponent implements OnInit, OnDestroy {
   sessionId: number = 0;
   isSessionHost: boolean = false;
 
-  constructor(private route: ActivatedRoute, private sessionWsService: SessionWsService, private router: Router) { }
+  constructor(private route: ActivatedRoute, private sessionWsService: SessionWsService) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];
     this.sessionId = Number(id);
 
-    this.sessionWsService.usersSubject$(this.sessionId)
+    this.sessionWsService.joinSessionSubject$(this.sessionId)
       .pipe(takeUntil(this._destroyed$))
-      .subscribe((updatedUsers: UpdateUsersResponse) => {
-        this.users = updatedUsers.users.map(u => u.name);
+      .subscribe((joinSessionResponse: JoinSessionResponse) => {
+        this.users = joinSessionResponse.users.map(u => u.name);
       });
 
-    this.sessionWsService.updateUsers(this.sessionId);
+    this.sessionWsService.joinSession(this.sessionId);
     this.setSessionHost();
   }
 
@@ -47,7 +47,6 @@ export class WaitingRoomComponent implements OnInit, OnDestroy {
 
   startGame() {
     this.sessionWsService.startGame(this.sessionId);
-    this.router.navigate(['game-room', this.sessionId]);
   }
 
 }

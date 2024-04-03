@@ -54,7 +54,7 @@ export class SessionService {
       name: name
     };
 
-    return this.httpClient.post<TokenResponse>(`http://localhost:3000/session/${sessionId}/join`, body, jsonContentTypeHeaders)
+    return this.httpClient.post<TokenResponse>(`http://localhost:3000/session/${sessionId}/authenticate`, body, jsonContentTypeHeaders)
       .pipe(
         tap((tokenResponse: TokenResponse) => {
           this.sessionWsService.connect(sessionId, tokenResponse.token, name);

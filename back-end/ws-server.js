@@ -3,6 +3,8 @@ import {
   getUsersInSession,
   checkValidSessionToken,
   startSession,
+  endSession,
+  getSession,
 } from "./db/sessions.js";
 
 const wss = new WebSocketServer({
@@ -11,8 +13,38 @@ const wss = new WebSocketServer({
 
 const sessionClients = new Map();
 
+const startGame = "startGame";
+const endGame = "endGame";
+const joinSession = "joinSession";
+
 function onSocketError(err) {
   console.error(err);
+}
+
+function emitAllClients(sessionId, message) {
+  const clients = sessionClients.get(sessionId) || [];
+  clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(message));
+    }
+  });
+}
+
+function emitSingleClient(ws, message) {
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(message));
+  }
+}
+
+async function startTimer(sessionId, end_time) {
+  const endTime = new Date(end_time);
+  const currentDateUtc = new Date(new Date().toUTCString());
+  const timerDuration = endTime.getTime() - currentDateUtc.getTime();
+
+  setTimeout(async () => {
+    emitAllClients(sessionId, { type: endGame, sessionId });
+    await endSession(sessionId);
+  }, timerDuration);
 }
 
 async function authenticate(request, callback) {
@@ -48,48 +80,39 @@ function upgradeServer(server) {
   });
 
   wss.on("connection", (ws, request) => {
+    // const sessionId = request.url.split("/")[2];
+    // ws.on("close", async () => {
+    //   const clients = sessionClients.get(sessionId);
+    //   const index = clients.indexOf(ws);
+    //   if (index > -1) {
+    //     clients.splice(index, 1);
+    //   }
+    //   const users = await getUsersInSession(sessionId);
+    //   emitAllClients(sessionId, { type: joinSession, sessionId, users });
+    // });
+
     ws.on("message", async (message) => {
       const { type, sessionId } = JSON.parse(message);
 
-      if (type === "joinSession") {
+      if (type === joinSession) {
         if (!sessionClients.has(sessionId)) {
           sessionClients.set(sessionId, []);
         }
         sessionClients.get(sessionId).push(ws);
-      }
-      if (type === "updateUsers") {
         const users = await getUsersInSession(sessionId);
-        ws.send(
-          JSON.stringify({ type: "updateUsers", users, sessionId: sessionId })
-        );
-      }
-      if (type === "startGame") {
-        const endTime = await startSession(sessionId);
-        const clients = sessionClients.get(sessionId) || [];
-        clients.forEach((client) => {
-          if (client.readyState === WebSocket.OPEN) {
-            client.send(
-              JSON.stringify({
-                type: "startGame",
-                endTime,
-                sessionId: sessionId,
-              })
-            );
-          }
+        await emitAllClients(sessionId, {
+          type: joinSession,
+          sessionId,
+          users,
         });
+      }
+      if (type === startGame) {
+        const endTime = await startSession(sessionId);
+        emitAllClients(sessionId, { type: startGame, endTime, sessionId });
+        startTimer(sessionId, endTime);
       }
     });
   });
 }
 
-async function updateUsers(sessionId) {
-  const users = await getUsersInSession(sessionId);
-  const clients = sessionClients.get(sessionId) || [];
-  clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify({ type: "updateUsers", users }));
-    }
-  });
-}
-
-export { upgradeServer, updateUsers, wss };
+export { upgradeServer };

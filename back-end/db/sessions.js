@@ -29,15 +29,26 @@ async function joinSession(name, sessionId, token) {
 async function startSession(sessionId) {
   const session = await getSession(sessionId);
 
-  const timeLimitMinutes = session.time_limit;
+  if (!session.started) {
+    const timeLimitMinutes = session.time_limit;
 
-  const updatedSession = await sql`
+    const updatedSession = await sql`
+          update session
+          set started = true, end_time = now() + ${timeLimitMinutes} * interval '1 minute'
+          where id = ${sessionId}
+          returning end_time
+      `;
+    return updatedSession[0].end_time;
+  }
+  return session.end_time;
+}
+
+async function endSession(sessionId) {
+  await sql`
         update session
-        set started = true, end_time = now() + ${timeLimitMinutes} * interval '1 minute'
+        set ended = true
         where id = ${sessionId}
-        returning end_time
     `;
-  return updatedSession[0].end_time;
 }
 
 async function checkValidSessionToken(sessionId, token) {
@@ -63,4 +74,5 @@ export {
   getUsersInSession,
   checkValidSessionToken,
   startSession,
+  endSession,
 };
